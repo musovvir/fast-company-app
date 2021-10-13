@@ -7,13 +7,15 @@ import _ from "lodash"
 import GroupList from "./GroupList"
 import api from "../api"
 import SearchStatus from "./SearchStatus"
+import SearchUser from "./SearchUser"
 
 const UsersList = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [professions, setProfessions] = useState()
   const [selectedProf, setSelectedProf] = useState()
   const [sortedBy, setSortedBy] = useState({ iter: "name", order: "asc" })
-  //
+  const [searchUser, setSearchUser] = useState("")
+
   const [users, setUsers] = useState()
 
   useEffect(() => {
@@ -45,6 +47,7 @@ const UsersList = () => {
 
   const handleProfessionSelect = (item) => {
     setSelectedProf(item)
+    setSearchUser("")
   }
 
   const handlePageChange = (pageIndex) => {
@@ -53,6 +56,11 @@ const UsersList = () => {
 
   const handleSort = (item) => {
     setSortedBy(item)
+  }
+
+  const handleSearchUser = ({ target }) => {
+    setSearchUser(target.value)
+    setSelectedProf()
   }
   const pageSize = 6
 
@@ -66,13 +74,17 @@ const UsersList = () => {
   if (!users) {
     return "...loading"
   }
-  const count = filteredUsers.length
+
   const sortedUsers = _.orderBy(
     filteredUsers,
     [sortedBy.path],
     [sortedBy.order]
   )
-  const allUsers = paginate(sortedUsers, currentPage, pageSize)
+  const searchUsersFiltererd = sortedUsers.filter(
+    (item) => item.name.toUpperCase().indexOf(searchUser.toUpperCase()) !== -1
+  )
+  const count = searchUsersFiltererd.length
+  const allUsers = paginate(searchUsersFiltererd, currentPage, pageSize)
 
   const clearFilter = () => setSelectedProf()
 
@@ -88,8 +100,10 @@ const UsersList = () => {
           />
         </div>
       )}
+
       <div className="flex-column">
         <SearchStatus usersCount={count} />
+        <SearchUser value={searchUser} onChange={handleSearchUser} />
         {count > 0 && (
           <UsersTable
             users={allUsers}
