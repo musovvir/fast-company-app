@@ -25,8 +25,8 @@ module.exports = {
       }
     ],
     "max-len": "off",
-    "multiline-ternary": ["error", "always-multiline"],
-    "operator-linebreak": ["error", "before"],
+    "multiline-ternary": "off",
+    "operator-linebreak": "off",
     "no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
     "no-trailing-spaces": "off"
   }

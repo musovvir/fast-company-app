@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react"
-import UsersTable from "./UsersTable"
-import Pagination from "./Pagination"
+import UsersTable from "../../ui/UsersTable"
+import Pagination from "../../common/Pagination"
 import PropTypes from "prop-types"
-import { paginate } from "../utils/paginate"
+import { paginate } from "../../../utils/paginate"
 import _ from "lodash"
-import GroupList from "./GroupList"
-import api from "../api"
-import SearchStatus from "./SearchStatus"
-import SearchUser from "./SearchUser"
+import GroupList from "../../common/GroupList"
+import api from "../../../api"
+import SearchStatus from "../../ui/SearchStatus"
 
-const UsersList = () => {
+const UsersListPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [professions, setProfessions] = useState()
+  const [searchQuery, setSearchQuery] = useState("")
   const [selectedProf, setSelectedProf] = useState()
   const [sortedBy, setSortedBy] = useState({ iter: "name", order: "asc" })
-  const [searchUser, setSearchUser] = useState("")
 
   const [users, setUsers] = useState()
 
@@ -36,18 +35,23 @@ const UsersList = () => {
     )
     console.log(id)
   }
-  //
+
   useEffect(() => {
     api.professions.fetchAll().then((data) => setProfessions(data))
   }, [])
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [selectedProf])
+  }, [selectedProf, searchQuery])
 
   const handleProfessionSelect = (item) => {
+    if (searchQuery !== "") setSearchQuery("")
     setSelectedProf(item)
-    setSearchUser("")
+  }
+
+  const handleSearchQuery = ({ target }) => {
+    setSelectedProf(undefined)
+    setSearchQuery(target.value)
   }
 
   const handlePageChange = (pageIndex) => {
@@ -58,13 +62,14 @@ const UsersList = () => {
     setSortedBy(item)
   }
 
-  const handleSearchUser = ({ target }) => {
-    setSearchUser(target.value)
-    setSelectedProf()
-  }
   const pageSize = 6
 
-  const filteredUsers = selectedProf
+  const filteredUsers = searchQuery
+    ? users.filter(
+        (user) =>
+          user.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1
+      )
+    : selectedProf
     ? users.filter(
         (user) =>
           JSON.stringify(user.profession) === JSON.stringify(selectedProf)
@@ -80,11 +85,9 @@ const UsersList = () => {
     [sortedBy.path],
     [sortedBy.order]
   )
-  const searchUsersFiltererd = sortedUsers.filter(
-    (item) => item.name.toUpperCase().indexOf(searchUser.toUpperCase()) !== -1
-  )
-  const count = searchUsersFiltererd.length
-  const allUsers = paginate(searchUsersFiltererd, currentPage, pageSize)
+
+  const count = sortedUsers.length
+  const allUsers = paginate(sortedUsers, currentPage, pageSize)
 
   const clearFilter = () => setSelectedProf()
 
@@ -101,9 +104,15 @@ const UsersList = () => {
         </div>
       )}
 
-      <div className="flex-column">
+      <div className="d-flex flex-column">
         <SearchStatus usersCount={count} />
-        <SearchUser value={searchUser} onChange={handleSearchUser} />
+        <input
+          type="text"
+          name="searchQuery"
+          placeholder="Search..."
+          onChange={handleSearchQuery}
+          value={searchQuery}
+        />
         {count > 0 && (
           <UsersTable
             users={allUsers}
@@ -126,8 +135,8 @@ const UsersList = () => {
   )
 }
 
-UsersList.propTypes = {
+UsersListPage.propTypes = {
   users: PropTypes.array
 }
 
-export default UsersList
+export default UsersListPage
