@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { validator } from "../../../utils/ validator";
-import api from "../../../api";
+import { validator } from "../../../utils/validator";
+import API from "../../../../api";
 import TextField from "../../common/form/textField";
 import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radio.Field";
 import MultiSelectField from "../../common/form/multiSelectField";
+import BackHistoryButton from "../../common/backButton";
 
 const EditUserPage = () => {
     const { userId } = useParams();
@@ -44,7 +45,7 @@ const EditUserPage = () => {
         const isValid = validate();
         if (!isValid) return;
         const { profession, qualities } = data;
-        api.users
+        API.users
             .update(userId, {
                 ...data,
                 profession: getProfessionById(profession),
@@ -55,15 +56,15 @@ const EditUserPage = () => {
     };
     useEffect(() => {
         setIsLoading(true);
-        api.users.getById(userId).then(({ profession, ...data }) =>
+        API.users.getById(userId).then(({ profession, ...data }) =>
             setData((prevState) => ({
                 ...prevState,
                 ...data,
                 profession: profession._id
             }))
         );
-        api.qualities.fetchAll().then((data) => setQualities(data));
-        api.professions.fetchAll().then((data) => setProfession(data));
+        API.qualities.fetchAll().then((data) => setQualities(data));
+        API.professions.fetchAll().then((data) => setProfession(data));
     }, []);
     useEffect(() => {
         if (data._id) setIsLoading(false);
@@ -100,6 +101,7 @@ const EditUserPage = () => {
     const isValid = Object.keys(errors).length === 0;
     return (
         <div className="container mt-5">
+            <BackHistoryButton />
             <div className="row">
                 <div className="col-md-6 offset-md-3 shadow p-4">
                     {!isLoading && Object.keys(professions).length > 0 ? (
@@ -125,6 +127,7 @@ const EditUserPage = () => {
                                 onChange={handleChange}
                                 value={data.profession}
                                 error={errors.profession}
+                                name="profession"
                             />
                             <RadioField
                                 options={[

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { validator } from "../../utils/ validator";
+import { validator } from "../../utils/validator";
 import TextField from "../common/form/textField";
-import api from "../../api";
+import API from "../../../api";
 import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radio.Field";
 import MultiSelectField from "../common/form/multiSelectField";
@@ -20,8 +20,8 @@ const RegisterForm = () => {
     const [professions, setProfession] = useState([]);
     const [errors, setErrors] = useState({});
     useEffect(() => {
-        api.professions.fetchAll().then((data) => setProfession(data));
-        api.qualities.fetchAll().then((data) => setQualities(data));
+        API.professions.fetchAll().then((data) => setProfession(data));
+        API.qualities.fetchAll().then((data) => setQualities(data));
     }, []);
     const handleChange = (target) => {
         setData((prevState) => ({
@@ -101,6 +101,7 @@ const RegisterForm = () => {
             <SelectField
                 label="Выбери свою профессию"
                 defaultOption="Choose..."
+                name="profession"
                 options={professions}
                 onChange={handleChange}
                 value={data.profession}
