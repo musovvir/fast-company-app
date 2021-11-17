@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { displayDate } from "../../../utils/displayDate";
-import API from "../../../../api";
-
+import API from "../../../api";
 const Comment = ({
     content,
     created_at: created,
@@ -19,11 +18,12 @@ const Comment = ({
             setIsLoading(false);
         });
     }, []);
+
     return (
         <div className="bg-light card-body  mb-3">
             <div className="row">
                 {isLoading ? (
-                    "Loading..."
+                    "Loading ..."
                 ) : (
                     <div className="col">
                         <div className="d-flex flex-start ">
@@ -64,9 +64,9 @@ const Comment = ({
         </div>
     );
 };
-
 Comment.propTypes = {
     content: PropTypes.string,
+    edited_at: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     created_at: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     userId: PropTypes.string,
     onRemove: PropTypes.func,

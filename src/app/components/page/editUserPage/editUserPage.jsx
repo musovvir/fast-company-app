@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { validator } from "../../../utils/validator";
-import API from "../../../../api";
+import { validator } from "../../../utils/ validator";
+import api from "../../../api";
 import TextField from "../../common/form/textField";
 import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radio.Field";
@@ -45,7 +45,7 @@ const EditUserPage = () => {
         const isValid = validate();
         if (!isValid) return;
         const { profession, qualities } = data;
-        API.users
+        api.users
             .update(userId, {
                 ...data,
                 profession: getProfessionById(profession),
@@ -54,17 +54,21 @@ const EditUserPage = () => {
             .then((data) => history.push(`/users/${data._id}`));
         console.log(data);
     };
+    const transformData = (data) => {
+        return data.map((qual) => ({ label: qual.name, value: qual._id }));
+    };
     useEffect(() => {
         setIsLoading(true);
-        API.users.getById(userId).then(({ profession, ...data }) =>
+        api.users.getById(userId).then(({ profession, qualities, ...data }) =>
             setData((prevState) => ({
                 ...prevState,
                 ...data,
+                qualities: transformData(qualities),
                 profession: profession._id
             }))
         );
-        API.qualities.fetchAll().then((data) => setQualities(data));
-        API.professions.fetchAll().then((data) => setProfession(data));
+        api.qualities.fetchAll().then((data) => setQualities(data));
+        api.professions.fetchAll().then((data) => setProfession(data));
     }, []);
     useEffect(() => {
         if (data._id) setIsLoading(false);
@@ -123,11 +127,11 @@ const EditUserPage = () => {
                             <SelectField
                                 label="Выбери свою профессию"
                                 defaultOption="Choose..."
+                                name="profession"
                                 options={professions}
                                 onChange={handleChange}
                                 value={data.profession}
                                 error={errors.profession}
-                                name="profession"
                             />
                             <RadioField
                                 options={[

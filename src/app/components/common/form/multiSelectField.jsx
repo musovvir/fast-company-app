@@ -3,10 +3,6 @@ import Select from "react-select";
 import PropTypes from "prop-types";
 
 const MultiSelectField = ({ options, onChange, name, label, defaultValue }) => {
-    // const defaultValueToArray = defaultValue.map((value) => ({
-    //     label: value.name,
-    //     value: value._id
-    // }));
     const optionsArray =
         !Array.isArray(options) && typeof options === "object"
             ? Object.keys(options).map((optionName) => ({
@@ -23,8 +19,8 @@ const MultiSelectField = ({ options, onChange, name, label, defaultValue }) => {
             <label className="form-label">{label}</label>
             <Select
                 isMulti
-                // defaultValue={defaultValueToArray}
                 closeMenuOnSelect={false}
+                defaultValue={defaultValue}
                 options={optionsArray}
                 className="basic-multi-select"
                 classNamePrefix="select"
